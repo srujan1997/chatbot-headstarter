@@ -52,10 +52,9 @@ export default function Chatbox() {
                         whileHover={{ 
                             scale: 1.005 
                         }} 
-                        className="cursor-pointer rounded-xl px-7 place-items-start place-content-start p-3 bg-blue-300 max-w-[300px] h-max">
-                            <p>
-                                Welcome to our chatbot. Ask us some questions. Our responses will be in blue.
-                            </p>
+                        className="cursor-pointer rounded-xl flex gap-6 px-7 place-items-start place-content-start p-3 max-w-[350px] h-max">
+                            <div className="w-10 h-10 rounded-full bg-[#31363F]"></div>
+                            <p>Welcome to our chatbot. Ask us some questions. Our responses will be in blue.</p>
                         </motion.div>
 
                     </motion.div>
@@ -66,16 +65,14 @@ export default function Chatbox() {
                         whileHover={{ 
                             scale: 1.005 
                         }}
-                        className="cursor-pointer rounded-xl px-7 place-items-start place-content-start p-3 bg-green-300 max-w-[300px] h-max">
-                            <p>
-                                Your questions and prompts will be in green here.
-                            </p>
+                        className="cursor-pointer rounded-xl px-7 place-items-start place-content-start p-3 bg-[#31363F] max-w-[350px] h-max">
+                            <p>Your questions and prompts will be in green here.</p>
                         </motion.div>
 
                     </motion.div>
 
                         <motion.div
-                        className="w-full h-[1px] flex bg-gray-300 my-8"
+                        className="w-full h-[1px] flex bg-[#31363F] my-8"
                         />
                     
                     {conversation.map((message) => (
@@ -84,7 +81,8 @@ export default function Chatbox() {
                             whileHover={{ 
                                 scale: 1.005 
                             }}
-                            className={`cursor-pointer rounded-xl px-7 place-items-start place-content-start p-3 sm:max-w-[500px] h-max  ${message.role === 'user' ? 'bg-green-300' : 'bg-blue-300'}`} key={message.content}>
+                            className={`cursor-pointer flex gap-6 rounded-xl px-7 place-items-start place-content-start p-3 sm:max-w-[500px] h-max  ${message.role === 'user' ? 'bg-[#31363F]' : 'bg-transparent'}`} key={message.content}>
+                                {message.role !== 'user' && <div className="w-10 h-10 rounded-full bg-[#31363F]"></div>}
                                 <ReactMarkdown rehypePlugins={[rehypeRaw]} className="prose-lg">{message.content}</ReactMarkdown>
                             </motion.div>
                         </motion.div>
@@ -104,10 +102,10 @@ export default function Chatbox() {
                             onChange={(event) => {
                                 setInput(event.target.value);
                             }} 
-                            className="outline outline-primary/20" autoFocus />
+                            className="outline outline-transparent border-transparent bg-[#31363F]" autoFocus />
                     </div>
 
-                    <button className="bg-primary/20 p-2 rounded-full"
+                    <button className="bg-[#31363F] p-3 rounded-full"
                         onClick={() => startChat()}
                     >
                         <FaLongArrowAltUp size={20} />
