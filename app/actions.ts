@@ -34,6 +34,7 @@ export async function streamConversation(history: Message[]) {
       newMessage: stream.value,
     };
 }
+
 export async function getConversationHistory(city: string) {
     return conversationHistory[city] || [];
 }
@@ -45,7 +46,7 @@ export async function mainGeminiStream(history: Message[]) {
     // const sanitizeText = (text: string,) => text.replace(/[*_~`]/g, '');
   
     const prompt = `You are a friendly chatbot. Your job is to become the user's best friend. If they
-    ask for advice try your best to advise. 
+    ask for advice try your best to advise. You MUST finish all responses in complete sentences. NEver just stop in the middle of a sentence.
     
     ${history.map(msg => `${msg.role === "user" ? "User" : "Assistant"}: ${msg.content}`).join('\n')}
     

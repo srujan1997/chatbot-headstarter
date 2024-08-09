@@ -76,6 +76,13 @@
   display: none; /* Safari and Chrome */
 }
 
+*:focus {
+  outline: none;
+}
+
+textarea {
+  resize: none;
+}
 /* colors */
 
 /* darkest */
@@ -85,7 +92,7 @@
   /* #31363F */
 
 /* kinda light */
-  /* #76ABAE */
+  /* # */
 
 /* lightest */
 /* #EEEEEE */
