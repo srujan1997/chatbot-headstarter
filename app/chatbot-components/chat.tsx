@@ -16,7 +16,7 @@ import { useChatbot } from "../chatbotProvider";
 // 
 
 
-type AnimatedTextProps = {
+export type AnimatedTextProps = {
     text: string | string[];
     el?: keyof JSX.IntrinsicElements;
     className?: string;
@@ -26,9 +26,17 @@ type AnimatedTextProps = {
       hidden: Variant;
       visible: Variant;
     };
+
   };
 
-const defaultAnimations = {
+  type AnimationSettings = {
+    hidden: Variant;
+    visible: Variant;
+  };
+  
+
+
+export const defaultAnimations : AnimationSettings =  {
 hidden: {
     opacity: 0,
     x: -20,
@@ -40,7 +48,7 @@ visible: {
     duration: 0.05,
     },
 },
-  };
+};
 
 export const AnimatedText = ({
     text,
@@ -107,7 +115,7 @@ export const AnimatedText = ({
         </motion.span>
       </Wrapper>
     );
-  };
+};
 
 export default function Chatbox() {
 
@@ -177,7 +185,7 @@ export default function Chatbox() {
 
 
 
-                <motion.div id="chat-container" className="w-full md:w-[calc(70vw-100px)] no-scrollbar h-[calc(100vh-150px)] flex flex-col overflow-y-scroll py-8">
+                <motion.div id="chat-container" className="w-full md:w-[calc(80vw-100px)] no-scrollbar h-[calc(100vh-150px)] flex flex-col overflow-y-scroll py-8">
                     
                     {/* welcome messege */}
                     <motion.div className="w-full h-max flex place-content-start p-5 text-sm">
