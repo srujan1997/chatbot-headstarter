@@ -12,8 +12,8 @@ import { useRef } from "react";
 import loadingGif from '../assets/load.gif'
 import { Textarea } from "@/components/ui/textarea";
 import { useInView as useReactIOInView } from "react-intersection-observer";
-
-
+import { useChatbot } from "../chatbotProvider";
+// 
 
 
 type AnimatedTextProps = {
@@ -113,14 +113,21 @@ export default function Chatbox() {
 
     const [input, setInput] = useState<string>("");
     const [conversation, setConversation] = useState<Message[]>([]);
-    const [thinking, setThinking] = useState<boolean>(false);
+    const { isThinking, setIsThinking } = useChatbot();    
     const chatEndRef = useRef<HTMLDivElement>(null);
 
+    const handleKeyPress = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        startChat();
+      }
+    };
 
     // gemini function 
     const startChat = async () => {
-      setThinking(true);
       
+      setIsThinking(true);
+
       const { messages, newMessage } = await streamConversation([
         ...conversation,
         { role: "user", content: input },
@@ -133,9 +140,10 @@ export default function Chatbox() {
           { role: "assistant", content: textContent },
       ]);
 
-      console.log(textContent);
+      console.log("textContent", textContent);
+      console.log("newMessage", newMessage);
       setInput(""); // Clear the input field after submitting
-      setThinking(false);
+      setIsThinking(false);
 
       // Scroll to the end of the chat after the conversation is updated
       setTimeout(() => {
@@ -143,6 +151,7 @@ export default function Chatbox() {
       }, 300);
     }
 
+    // framer motion animation stuff
     const squareVariants = {
       visible: { opacity: 1, y: -20, transition: { duration: 0.3, ease: "easeInOut" } },
       hidden: { opacity: 0}
@@ -156,6 +165,8 @@ export default function Chatbox() {
       }
     }, [controls, inView]);
 
+
+
     return (
         <>
 
@@ -164,7 +175,9 @@ export default function Chatbox() {
 
                 <AnimatePresence>
 
-                <motion.div id="chat-container" className={`w-full md:w-[calc(70vw-100px)] no-scrollbar h-[calc(100vh-150px)] flex flex-col overflow-y-scroll py-8`}>
+
+
+                <motion.div id="chat-container" className="w-full md:w-[calc(70vw-100px)] no-scrollbar h-[calc(100vh-150px)] flex flex-col overflow-y-scroll py-8">
                     
                     {/* welcome messege */}
                     <motion.div className="w-full h-max flex place-content-start p-5 text-sm">
@@ -213,41 +226,82 @@ export default function Chatbox() {
                     /> */}
 
 
-                    {/* conversation history */}
-                    {conversation.slice(0, -1).map((message, index) => (
-                        <motion.div key={message.content} className={`w-full h-max flex p-5 ${message.role === 'user' ? 'place-content-end' : 'place-content-start'}`} >
+
+                    {conversation.length > 4 && (
+                      <>
+                      {/* conversation history */}
+                      {conversation.slice(0, -1).map((message, index) => (
+                          <>
+
+                          <motion.div key={message.content} className={`w-full h-max flex flex-col gap-2 p-5 ${message.role === 'user' ? 'place-content-end place-items-end' : 'place-content-start place-items-start'}`}>
+                              
+                              <motion.div 
+                            
+                              className={`cursor-pointer flex gap-6 rounded-xl px-7 place-items-start place-content-start p-3 w-max sm:max-w-[300px] h-max ${message.role === 'user' ? 'bg-[#31363F]' : 'bg-transparent'} ${index}`} key={index}>
+                                    {message.role != 'user' && <div className="w-max p-1 h-10 rounded-full bg-[#76ABAE]"></div>}
+                                    <ReactMarkdown rehypePlugins={[rehypeRaw]} className="prose-sm">{message.content}</ReactMarkdown>
+
+                                  {/* {message.content} */}
+                              </motion.div>
+
+                              <motion.span className="text-sm text-muted-foreground">{new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</motion.span>
+
+                          </motion.div>
+                          </>
+                      ))}
+
+                      {/* latest message */}
+                      {conversation.slice(-1).map((message, index) => (
+                        <>
                     
-                            <motion.div 
-                          
-                            className={`cursor-pointer flex gap-6 rounded-xl px-7 place-items-start place-content-start p-3 w-max  sm:max-w-[500px]  h-max  ${message.role === 'user' ? 'bg-[#31363F]' : 'bg-transparent'}`} key={index}>
-                                  {message.role != 'user' && <div className="w-max p-1 h-10 rounded-full bg-[#76ABAE]"></div>}
-                                  <ReactMarkdown rehypePlugins={[rehypeRaw]} className="prose-sm">{message.content}</ReactMarkdown>
+                          <motion.div key={message.content} className={`w-full h-max flex flex-col gap-2 p-5 ${message.role === 'user' ? 'place-content-end' : 'place-content-start'}`} >
+                      
+                              <motion.div 
+                              ref={ref}
+                              animate={controls}
+                              initial="hidden"
+                              variants={squareVariants}
 
-                                {/* {message.content} */}
-                            </motion.div>
+                              className={`cursor-pointer flex gap-6 rounded-xl px-7 place-items-start place-content-start p-3 w-max sm:max-w-[300px] h-max ${message.role === 'user' ? 'bg-[#31363F]' : 'bg-transparent'} ${index}`} key={index}>
+                                    {message.role != 'user' && <div className="w-max p-1 h-10 rounded-full bg-[#76ABAE]"></div>}
+                                    <ReactMarkdown rehypePlugins={[rehypeRaw]} className="prose-sm">{message.content}</ReactMarkdown>
 
-                        </motion.div>
-                    ))}
+                                  {/* {message.content} */}
+                              </motion.div>
 
-                    {/* latest message */}
-                    {conversation.slice(-1).map((message, index) => (
-                        <motion.div key={message.content} className={`w-full h-max flex p-5 ${message.role === 'user' ? 'place-content-end' : 'place-content-start'}`} >
-                    
-                            <motion.div 
-                            ref={ref}
-                            animate={controls}
-                            initial="hidden"
-                            variants={squareVariants}
+                              <motion.span className="text-sm text-muted-foreground">{new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</motion.span>
 
-                            className={`cursor-pointer flex gap-6 rounded-xl px-7 place-items-start place-content-start p-3 w-max  sm:max-w-[500px]  h-max  ${message.role === 'user' ? 'bg-[#31363F]' : 'bg-transparent'}`} key={index}>
-                                  {message.role != 'user' && <div className="w-max p-1 h-10 rounded-full bg-[#76ABAE]"></div>}
-                                  <ReactMarkdown rehypePlugins={[rehypeRaw]} className="prose-sm">{message.content}</ReactMarkdown>
 
-                                {/* {message.content} */}
-                            </motion.div>
+                          </motion.div>
+                        </>
+                      ))}
+                      </>
+                    )}
 
-                        </motion.div>
-                    ))}
+                    {conversation.length < 5 && (
+                      <>
+                        {conversation.map((message, index) => (
+                          <>
+
+                          <motion.div key={message.content} className={`w-full h-max flex flex-col gap-2 p-5 ${message.role === 'user' ? 'place-content-end place-items-end' : 'place-content-start place-items-start'}`}>
+                              
+                              <motion.div 
+                            
+                              className={`cursor-pointer flex gap-6 rounded-xl px-7 place-items-start place-content-start p-3 w-max sm:max-w-[300px] h-max ${message.role === 'user' ? 'bg-[#31363F]' : 'bg-transparent'} ${index}`} key={index}>
+                                    {message.role != 'user' && <div className="w-max p-1 h-10 rounded-full bg-[#76ABAE]"></div>}
+                                    <ReactMarkdown rehypePlugins={[rehypeRaw]} className="prose-sm">{message.content}</ReactMarkdown>
+
+                                  {/* {message.content} */}
+                              </motion.div>
+
+                              <motion.span className="text-sm text-muted-foreground">{new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</motion.span>
+
+                          </motion.div>
+                          </>
+                      ))}
+                      </>
+                    )}
+
 
                   
                     <div className="w-full h-max bg-[#76ABAE] " ref={chatEndRef} />
@@ -265,6 +319,7 @@ export default function Chatbox() {
                             onChange={(event) => {
                                 setInput(event.target.value);
                             }} 
+                            onKeyPress={handleKeyPress}
                             className="outline no-scrollbar outline-transparent border-transparent bg-[#31363F]" autoFocus />
                     </div>
 
@@ -272,8 +327,9 @@ export default function Chatbox() {
                         >
                             <button className="bg-[#76ABAE] p-3 rounded-full"
                                 onClick={() => startChat()}
+                                disabled={isThinking}
                             >
-                              {thinking ? (
+                              {isThinking ? (
                                 <FaSpinner size={20} className="animate-spin" />
                                 ) : (
                                   <FaLongArrowAltUp size={20} />
