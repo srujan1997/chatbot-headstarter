@@ -11,6 +11,8 @@ import { motion, AnimatePresence, useInView, useAnimation, Variant } from "frame
 import { useRef } from "react";
 import loadingGif from '../assets/load.gif'
 import { Textarea } from "@/components/ui/textarea";
+import { useInView as useReactIOInView } from "react-intersection-observer";
+
 
 
 
@@ -117,35 +119,46 @@ export default function Chatbox() {
 
     // gemini function 
     const startChat = async () => {
-
+      setThinking(true);
       
       const { messages, newMessage } = await streamConversation([
         ...conversation,
         { role: "user", content: input },
       ]);
-      
-      setThinking(true);
-        let textContent = "";
 
-        for await (const delta of readStreamableValue(newMessage)) {
-            textContent = `${textContent}${delta}`;
+      const textContent = newMessage;
 
-            setConversation([
-                ...messages,
-                { role: "assistant", content: textContent },
-            ]);
-        }
+      setConversation([
+          ...messages,
+          { role: "assistant", content: textContent },
+      ]);
 
-        console.log(textContent)
-        setInput(""); // Clear the input field after submitting
+      console.log(textContent);
+      setInput(""); // Clear the input field after submitting
+      setThinking(false);
 
-        setThinking(false);
+      // Scroll to the end of the chat after the conversation is updated
+      setTimeout(() => {
+        chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, 300);
     }
 
+    const squareVariants = {
+      visible: { opacity: 1, y: -20, transition: { duration: 0.3, ease: "easeInOut" } },
+      hidden: { opacity: 0}
+    };
 
+    const controls = useAnimation();
+    const [ref, inView] = useReactIOInView();
+    useEffect(() => {
+      if (inView) {
+        controls.start("visible");
+      }
+    }, [controls, inView]);
 
     return (
         <>
+
             <section className="w-full h-full flex place-content-center" >
                 
 
@@ -154,7 +167,7 @@ export default function Chatbox() {
                 <motion.div id="chat-container" className={`w-full md:w-[calc(70vw-100px)] no-scrollbar h-[calc(100vh-150px)] flex flex-col overflow-y-scroll py-8`}>
                     
                     {/* welcome messege */}
-                    <motion.div className="w-full h-max flex place-content-start p-5">
+                    <motion.div className="w-full h-max flex place-content-start p-5 text-sm">
                     
                         <motion.div 
                         whileHover={{ 
@@ -175,7 +188,7 @@ export default function Chatbox() {
                     </motion.div>
 
                     {/* your questions and prompts....  */}
-                    <motion.div className="w-full h-max flex place-content-end p-5">
+                    <motion.div className="w-full h-max flex place-content-end p-5 text-sm">
                     
                         <motion.div 
                         whileHover={{ 
@@ -200,21 +213,42 @@ export default function Chatbox() {
                     /> */}
 
 
-                    {/* conversation */}
-                    {conversation.map((message, index) => (
+                    {/* conversation history */}
+                    {conversation.slice(0, -1).map((message, index) => (
                         <motion.div key={message.content} className={`w-full h-max flex p-5 ${message.role === 'user' ? 'place-content-end' : 'place-content-start'}`} >
                     
                             <motion.div 
                           
-                            className={`cursor-pointer flex gap-6 rounded-xl px-7 place-items-start place-content-start p-3 sm:max-w-[500px] h-max  ${message.role === 'user' ? 'bg-[#31363F]' : 'bg-transparent'}`} key={message.content}>
+                            className={`cursor-pointer flex gap-6 rounded-xl px-7 place-items-start place-content-start p-3 w-max  sm:max-w-[500px]  h-max  ${message.role === 'user' ? 'bg-[#31363F]' : 'bg-transparent'}`} key={index}>
                                   {message.role != 'user' && <div className="w-max p-1 h-10 rounded-full bg-[#76ABAE]"></div>}
-                                  <ReactMarkdown rehypePlugins={[rehypeRaw]} className="prose-lg">{message.content}</ReactMarkdown>
+                                  <ReactMarkdown rehypePlugins={[rehypeRaw]} className="prose-sm">{message.content}</ReactMarkdown>
 
                                 {/* {message.content} */}
                             </motion.div>
 
                         </motion.div>
                     ))}
+
+                    {/* latest message */}
+                    {conversation.slice(-1).map((message, index) => (
+                        <motion.div key={message.content} className={`w-full h-max flex p-5 ${message.role === 'user' ? 'place-content-end' : 'place-content-start'}`} >
+                    
+                            <motion.div 
+                            ref={ref}
+                            animate={controls}
+                            initial="hidden"
+                            variants={squareVariants}
+
+                            className={`cursor-pointer flex gap-6 rounded-xl px-7 place-items-start place-content-start p-3 w-max  sm:max-w-[500px]  h-max  ${message.role === 'user' ? 'bg-[#31363F]' : 'bg-transparent'}`} key={index}>
+                                  {message.role != 'user' && <div className="w-max p-1 h-10 rounded-full bg-[#76ABAE]"></div>}
+                                  <ReactMarkdown rehypePlugins={[rehypeRaw]} className="prose-sm">{message.content}</ReactMarkdown>
+
+                                {/* {message.content} */}
+                            </motion.div>
+
+                        </motion.div>
+                    ))}
+
                   
                     <div className="w-full h-max bg-[#76ABAE] " ref={chatEndRef} />
 
