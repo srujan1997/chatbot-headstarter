@@ -1,7 +1,7 @@
 "use server";
 
 import { google } from "@ai-sdk/google";
-import { streamText } from "ai";
+import { streamText, generateText } from "ai";
 import { createStreamableValue } from "ai/rsc";
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
@@ -13,32 +13,49 @@ export interface Message {
 
 const conversationHistory: Record<string, Message[]> = {};
 export async function streamConversation(history: Message[]) {
-    const stream = createStreamableValue();
     const model = google("models/gemini-1.5-flash");
   
-    (async () => {
-      const { textStream } = await streamText({
+    const { text } = await generateText({
         model: model,
         messages: history,
-      });
-  
-      for await (const text of textStream) {
-        stream.update(text);
-      }
-  
-      stream.done();
-    })().then(() => {});
+    });
   
     return {
       messages: history,
-      newMessage: stream.value,
+      newMessage: text,
     };
 }
+
+// export async function streamConversation(history: Message[]) {
+//     const stream = createStreamableValue();
+//     const model = google("models/gemini-1.5-flash");
+  
+//     (async () => {
+//       const { textStream } = await streamText({
+//         model: model,
+//         messages: history,
+//       });
+  
+//       for await (const text of textStream) {
+//         stream.update(text);
+//       }
+  
+//       stream.done();
+//     })().then(() => {});
+  
+//     return {
+//       messages: history,
+//       newMessage: stream.value,
+//     };
+// }
 
 export async function getConversationHistory(city: string) {
     return conversationHistory[city] || [];
 }
-  
+
+export async function translateText() {
+}
+
 export async function mainGeminiStream(history: Message[]) {
     const stream = createStreamableValue();
     const model = google("models/gemini-1.5-pro-latest");
