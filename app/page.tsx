@@ -1,5 +1,7 @@
 'use client'
 
+'use client'
+
 import Image from "next/image";
 import Chatbox from "./chatbot-components/chat";
 import { useChatbot } from "./chatbotProvider";

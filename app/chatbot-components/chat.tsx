@@ -13,7 +13,7 @@ import loadingGif from '../assets/load.gif'
 import { Textarea } from "@/components/ui/textarea";
 import { useInView as useReactIOInView } from "react-intersection-observer";
 import { useChatbot } from "../chatbotProvider";
-
+// 
 
 
 type AnimatedTextProps = {
@@ -177,12 +177,10 @@ export default function Chatbox() {
 
 
 
-                <motion.div id="chat-container" className={`w-full md:w-[calc(70vw-100px)] no-scrollbar h-[calc(100vh-150px)] flex flex-col overflow-y-scroll py-8`}>
+                <motion.div id="chat-container" className="w-full md:w-[calc(70vw-100px)] no-scrollbar h-[calc(100vh-150px)] flex flex-col overflow-y-scroll py-8">
                     
                     {/* welcome messege */}
                     <motion.div className="w-full h-max flex place-content-start p-5 text-sm">
-            <section className="w-full h-full">
-                <div className="w-full h-max flex place-content-end p-5">
                     
                         <motion.div 
                         whileHover={{ 
@@ -222,92 +220,92 @@ export default function Chatbox() {
 
                     </motion.div>
 
+                    {/* divider  */}
+                    {/* <motion.div
+                    className="w-full h-[1px] flex bg-[#76ABAE] my-8"
+                    /> */}
 
-                    {/* There was this weird bug that came from me
-                        needing to slice the message array.
 
-                        I was not able to figure out why. but i did fix the bug
-                        if you remove the conditional you will see that the second
-                        ai answer will just not show on the front end for some reason.
 
-                        this conditional(s) fixes the bug.
-                    */}
                     {conversation.length > 4 && (
                       <>
                       {/* conversation history */}
                       {conversation.slice(0, -1).map((message, index) => (
                           <>
-  
-                          <motion.div key={message.content} className={`w-full h-max flex flex-col gap-2 p-5 ${message.role === 'user' ? 'place-content-end place-items-end' : 'place-content-start place-items-start'}`} >
+
+                          <motion.div key={message.content} className={`w-full h-max flex flex-col gap-2 p-5 ${message.role === 'user' ? 'place-content-end place-items-end' : 'place-content-start place-items-start'}`}>
                               
                               <motion.div 
                             
-                              className={`cursor-pointer flex gap-6 rounded-xl px-7 place-items-start place-content-start p-3 w-max  sm:max-w-[300px]  h-max  ${message.role === 'user' ? 'bg-[#31363F]' : 'bg-transparent'}`} key={index}>
+                              className={`cursor-pointer flex gap-6 rounded-xl px-7 place-items-start place-content-start p-3 w-max sm:max-w-[300px] h-max ${message.role === 'user' ? 'bg-[#31363F]' : 'bg-transparent'} ${index}`} key={index}>
                                     {message.role != 'user' && <div className="w-max p-1 h-10 rounded-full bg-[#76ABAE]"></div>}
                                     <ReactMarkdown rehypePlugins={[rehypeRaw]} className="prose-sm">{message.content}</ReactMarkdown>
-  
+
                                   {/* {message.content} */}
                               </motion.div>
-  
+
                               <motion.span className="text-sm text-muted-foreground">{new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</motion.span>
-                              
-                              </motion.div>
-                              </>
+
+                          </motion.div>
+                          </>
                       ))}
-  
-                      {/* last message */}
+
+                      {/* latest message */}
                       {conversation.slice(-1).map((message, index) => (
-                        <motion.div key={message.content} className={`w-full h-max flex flex-col gap-2 p-5 ${message.role === 'user' ? 'place-content-end' : 'place-content-start'}`} >
+                        <>
+                    
+                          <motion.div key={message.content} className={`w-full h-max flex flex-col gap-2 p-5 ${message.role === 'user' ? 'place-content-end' : 'place-content-start'}`} >
                       
                               <motion.div 
                               ref={ref}
                               animate={controls}
                               initial="hidden"
                               variants={squareVariants}
-  
-                              className={`cursor-pointer flex gap-6 rounded-xl px-7 place-items-start place-content-start p-3 w-max  sm:max-w-[300px]  h-max  ${message.role === 'user' ? 'bg-[#31363F]' : 'bg-transparent'}`} key={index}>
+
+                              className={`cursor-pointer flex gap-6 rounded-xl px-7 place-items-start place-content-start p-3 w-max sm:max-w-[300px] h-max ${message.role === 'user' ? 'bg-[#31363F]' : 'bg-transparent'} ${index}`} key={index}>
                                     {message.role != 'user' && <div className="w-max p-1 h-10 rounded-full bg-[#76ABAE]"></div>}
                                     <ReactMarkdown rehypePlugins={[rehypeRaw]} className="prose-sm">{message.content}</ReactMarkdown>
-  
+
                                   {/* {message.content} */}
                               </motion.div>
-  
+
                               <motion.span className="text-sm text-muted-foreground">{new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</motion.span>
-  
-  
+
+
                           </motion.div>
+                        </>
                       ))}
                       </>
-
                     )}
 
-
-                    {conversation.length < 5 && ( 
-                    <>
-                      {conversation.map((message, index) => (
+                    {conversation.length < 5 && (
+                      <>
+                        {conversation.map((message, index) => (
                           <>
-  
-                          <motion.div key={message.content} className={`w-full h-max flex flex-col gap-2 p-5 ${message.role === 'user' ? 'place-content-end place-items-end' : 'place-content-start place-items-start'}`} >
+
+                          <motion.div key={message.content} className={`w-full h-max flex flex-col gap-2 p-5 ${message.role === 'user' ? 'place-content-end place-items-end' : 'place-content-start place-items-start'}`}>
                               
                               <motion.div 
                             
-                              className={`cursor-pointer flex gap-6 rounded-xl px-7 place-items-start place-content-start p-3 w-max  sm:max-w-[300px]  h-max  ${message.role === 'user' ? 'bg-[#31363F]' : 'bg-transparent'}`} key={index}>
+                              className={`cursor-pointer flex gap-6 rounded-xl px-7 place-items-start place-content-start p-3 w-max sm:max-w-[300px] h-max ${message.role === 'user' ? 'bg-[#31363F]' : 'bg-transparent'} ${index}`} key={index}>
                                     {message.role != 'user' && <div className="w-max p-1 h-10 rounded-full bg-[#76ABAE]"></div>}
                                     <ReactMarkdown rehypePlugins={[rehypeRaw]} className="prose-sm">{message.content}</ReactMarkdown>
-  
+
                                   {/* {message.content} */}
                               </motion.div>
-  
+
                               <motion.span className="text-sm text-muted-foreground">{new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</motion.span>
-                              
-                              </motion.div>
-                              </>
+
+                          </motion.div>
+                          </>
                       ))}
                       </>
                     )}
 
+
                   
                     <div className="w-full h-max bg-[#76ABAE] " ref={chatEndRef} />
+
                 </motion.div>
                             
                 </AnimatePresence>
@@ -323,20 +321,6 @@ export default function Chatbox() {
                             }} 
                             onKeyPress={handleKeyPress}
                             className="outline no-scrollbar outline-transparent border-transparent bg-[#31363F]" autoFocus />
-                    <div className="rounded-xl px-7 place-items-start place-content-start p-3 bg-green-300 w-max h-max">
-                        <p>
-                            Some test user text
-                        </p>
-                    </div>
-
-                </div>
-              
-                <div className="w-full h-max flex place-content-start p-5">
-                    
-                    <div className="rounded-xl px-7 place-items-start place-content-start p-3 bg-blue-300 w-max h-max">
-                        <p>
-                            Some test chatbot text
-                        </p>
                     </div>
 
                         <motion.div
@@ -356,7 +340,7 @@ export default function Chatbox() {
 
                 </div>
 
-            </section>
+            </section> 
         </>
     )
 }

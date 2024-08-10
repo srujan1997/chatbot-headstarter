@@ -3,8 +3,8 @@
 import React, { createContext, useState, useContext } from 'react';
 
 interface ChatbotContextType {
-  isThinking?: boolean;
-  setIsThinking: (value: boolean) => void;
+    isThinking: boolean;
+    setIsThinking: (value: boolean) => void;
 }
 
 const ChatbotContext = createContext<ChatbotContextType | null>(null);
@@ -14,9 +14,9 @@ export const ChatbotProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   return (
     <ChatbotContext.Provider value={{
-      isThinking,
-      setIsThinking
-    }}>
+        isThinking,
+        setIsThinking
+        }}>
       {children}
     </ChatbotContext.Provider>
   );
