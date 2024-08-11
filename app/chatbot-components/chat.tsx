@@ -188,9 +188,11 @@ export default function Chatbox() {
                 <motion.div id="chat-container" className="w-full md:w-[calc(80vw-100px)] no-scrollbar h-[calc(100vh-150px)] flex flex-col overflow-y-scroll py-8">
                     
                     {/* welcome messege */}
-                    <motion.div className="w-full h-max flex place-content-start p-5 text-sm">
+                    <motion.div className="w-full h-max flex flex-col place-items-start gap-2 p-5 text-sm">
                     
-                        <motion.div 
+                        <motion.div
+                        initial={{y: -100, opacity: 0}}
+                        animate={{ y: 0, opacity: 1}} 
                         whileHover={{ 
                             scale: 1.005 
                         }} 
@@ -206,12 +208,16 @@ export default function Chatbox() {
                             />
                         </motion.div>
 
+                        <motion.span className="text-sm text-muted-foreground">{new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</motion.span>
+
                     </motion.div>
 
                     {/* your questions and prompts....  */}
-                    <motion.div className="w-full h-max flex place-content-end p-5 text-sm">
+                    <motion.div className="w-full h-max flex flex-col gap-2 place-items-end p-5 text-sm">
                     
                         <motion.div 
+                        initial={{y: -100, opacity: 0}}
+                        animate={{ y: 0, opacity: 1}}                         
                         whileHover={{ 
                             scale: 1.005 
                         }}
@@ -224,7 +230,10 @@ export default function Chatbox() {
                                 className=""
                                 once
                             />
+                            
                         </motion.div>
+
+                        <motion.span className="text-sm text-muted-foreground">{new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</motion.span>
 
                     </motion.div>
 
@@ -319,7 +328,10 @@ export default function Chatbox() {
                 </AnimatePresence>
 
                 {/* input */}
-                <div className="absolute  bottom-0 place-self-center p-4 flex place-self-end justify-between  gap-8 place-items-center w-[90%] h-max">
+                <motion.div 
+                initial={{y: 100, opacity: 0}}
+                animate={{ y: 0, opacity: 1}}                 
+                className="absolute  bottom-0 place-self-center p-4 flex place-self-end justify-between  gap-8 place-items-center w-[90%] h-max">
                
                     <div className="w-full">
                         <Textarea 
@@ -332,6 +344,8 @@ export default function Chatbox() {
                     </div>
 
                         <motion.div
+                        whileHover={{scale: 1.1}}
+                        whileTap={{ scale: 0.9 }}
                         >
                             <button className="bg-[#76ABAE] p-3 rounded-full"
                                 onClick={() => startChat()}
@@ -346,7 +360,7 @@ export default function Chatbox() {
                         </motion.div>
                     
 
-                </div>
+                </motion.div>
 
             </section> 
         </>
